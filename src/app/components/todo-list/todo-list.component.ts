@@ -1,6 +1,7 @@
 import { Component, OnInit, Renderer2 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TodoService } from '../../services/todo.service';
+import { CalendarService } from '../../services/calendar.service'; // ✅ Ajout du service Google Calendar
 import { Task } from '../../models/task.model';
 
 @Component({
@@ -14,11 +15,13 @@ export class TodoListComponent implements OnInit {
   tasks: Task[] = []; // ✅ Liste des tâches
   progress: number = 0; // ✅ Pourcentage d'avancement des tâches
   motivationMessage: string = ''; // ✅ Message dynamique
+  private nextId: number = Date.now(); // ✅ Génère des ID uniques pour chaque tâche
 
-  constructor(private todoService: TodoService, private renderer: Renderer2) {}
+  constructor(private todoService: TodoService, private calendarService: CalendarService, private renderer: Renderer2) {}
 
   ngOnInit(): void {
     this.loadTasks();
+    this.loadPublicCalendarEvents(); // ✅ Charger les événements Google Calendar
   }
 
   /**
@@ -37,19 +40,48 @@ export class TodoListComponent implements OnInit {
   }
 
   /**
+   * 📌 Charger les événements publics depuis Google Calendar
+   */
+  loadPublicCalendarEvents(): void {
+    this.calendarService.getPublicEvents().subscribe((response: any) => {
+      const events = response.items || [];
+      events.forEach((event: any) => {
+        if (!this.tasks.find(task => task.title === event.summary)) {
+          this.tasks.push({ id: this.nextId++, title: event.summary, completed: false });
+        }
+      });
+    });
+  }
+
+  /**
+   * 📌 Ajouter une tâche manuellement
+   */
+  addTask(title: string): void {
+    if (title.trim()) {
+      this.tasks.push({ id: this.nextId++, title, completed: false });
+      this.updateProgress();
+    }
+  }
+
+  /**
    * 📌 Supprimer une tâche et mettre à jour la liste des tâches
    */
-  removeTask(id: number): void {
-    this.todoService.deleteTask(id);
-    this.loadTasks();
+  removeTask(id: number, event: MouseEvent): void {
+    event.stopPropagation(); // ✅ Empêche l'événement de se propager
+    this.tasks = this.tasks.filter(task => task.id !== id);
+    this.updateProgress();
   }
 
   /**
    * 📌 Changer l’état d’une tâche et mettre à jour la progression
    */
-  toggleCompletion(id: number): void {
-    this.todoService.toggleTaskCompletion(id);
-    this.loadTasks();
+  toggleCompletion(id: number, event: MouseEvent): void {
+    event.stopPropagation(); // ✅ Empêche l'événement de se propager
+    const task = this.tasks.find(task => task.id === id);
+    if (task) {
+      task.completed = !task.completed;
+      this.updateProgress();
+    }
   }
 
   /**
@@ -59,14 +91,7 @@ export class TodoListComponent implements OnInit {
     const completedTasks = this.getCompletedTasksCount();
     const totalTasks = this.tasks.length;
     this.progress = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
-
     this.updateMotivationMessage();
-
-  /**   // ✅ Déclenche les confettis lorsque la progression atteint 100%
-    if (this.progress === 100) {
-      this.launchConfetti();
-      // this.launchFireworks(); // 🎆 Feu d’artifice mis en commentaire
-    }*/
   }
 
   /**
@@ -85,29 +110,4 @@ export class TodoListComponent implements OnInit {
       this.motivationMessage = '';
     }
   }
-
-  /**
-   * 📌 Déclencher les confettis 🎊
-   
-  launchConfetti(): void {
-    const confettiContainer = document.createElement('div');
-    confettiContainer.id = 'confetti-container';
-    document.body.appendChild(confettiContainer);
-
-    for (let i = 0; i < 50; i++) {
-      const confetti = document.createElement('div');
-      confetti.classList.add('confetti');
-      confetti.style.left = `${Math.random() * 100}vw`;
-      const colors = ['red', 'yellow', 'blue', 'green', 'orange', 'pink', 'purple'];
-      confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-      const size = Math.random() * 10 + 5;
-      confetti.style.width = `${size}px`;
-      confetti.style.height = `${size}px`;
-      confetti.style.animationDuration = `${Math.random() * 3 + 2}s`;
-      confettiContainer.appendChild(confetti);
-      setTimeout(() => {
-        confetti.remove();
-      }, 5000);
-    }
-  }*/
 }

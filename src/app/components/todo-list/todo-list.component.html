@@ -1,9 +1,9 @@
-<div class="card">
-  <div class="card-header text-center">
+<div class="todo-list-container">
+  <div class="todo-list-header text-center">
     <h4>Liste des tâches</h4>
   </div>
 
-  <div class="card-body">
+  <div class="todo-list-body">
     <!-- ✅ Barre de progression animée -->
     <div class="progress mb-3">
       <div class="progress-bar progress-bar-striped progress-bar-animated" 
@@ -23,18 +23,18 @@
     <div id="confetti-container"></div>
 
     <!-- ✅ Liste des tâches -->
-    <ul class="list-group">
+    <ul class="todo-list">
       <li *ngFor="let task of tasks" 
-          class="list-group-item d-flex justify-content-between align-items-center">
-        <span [ngClass]="{'text-decoration-line-through': task.completed}">
+          class="todo-list-item d-flex justify-content-between align-items-center">
+        <span [ngClass]="{'text-decoration-line-through': task.completed}" (click)="toggleCompletion(task.id, $event)">
           {{ task.title }}
         </span>
 
         <div>
-          <button class="btn btn-sm btn-success me-2" (click)="toggleCompletion(task.id)">
+          <button class="todo-btn btn-success me-2" (click)="toggleCompletion(task.id, $event)">
             ✔
           </button>
-          <button class="btn btn-sm btn-danger" (click)="removeTask(task.id)">
+          <button class="todo-btn btn-danger" (click)="removeTask(task.id, $event)">
             ✖
           </button>
         </div>
