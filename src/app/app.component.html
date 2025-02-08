@@ -1,31 +1,36 @@
-<!-- ✅ Suppression du header -->
+<header class="header">
+  <h1>{{ title }}</h1>
+  <p class="date">{{ currentDate }}</p>
+</header>
 
-<main class="container mt-4">
+<main class="container">
   <!-- ✅ Affichage Desktop -->
-  <div>
+  <section class="todo-section">
     <app-todo-form></app-todo-form>
     <app-todo-list></app-todo-list>
-  </div>
+  </section>
 
   <!-- ✅ Conteneur des confettis -->
   <div id="confetti-container"></div>
 
   <!-- ✅ Affichage Mobile -->
   <ng-template #mobileView>
-    <div class="card">
-      <div class="card-header">
-        <h3>Ajouter une tâche</h3>
+    <section class="mobile-todo">
+      <div class="card">
+        <div class="card-header">
+          <h3>Ajouter une tâche</h3>
+        </div>
+        <div class="card-body">
+          <app-todo-form></app-todo-form>
+        </div>
       </div>
-      <div class="card-body">
-        <app-todo-form></app-todo-form>
-      </div>
-    </div>
 
-    <ul class="list-group mt-3">
-      <li *ngFor="let task of tasks" class="list-group-item d-flex justify-content-between align-items-center">
-        <span>{{ task.title }}</span>
-        <button class="btn btn-sm btn-danger" (click)="removeTask(task.id)">Supprimer</button>
-      </li>
-    </ul>
+      <ul class="list-group mt-3">
+        <li *ngFor="let task of tasks" class="list-group-item d-flex justify-content-between align-items-center">
+          <span class="task-title">{{ task.title }}</span>
+          <button class="btn btn-sm btn-danger" (click)="removeTask(task.id)">Supprimer</button>
+        </li>
+      </ul>
+    </section>
   </ng-template>
 </main>

@@ -1,16 +1,15 @@
-<div class="card">
-  <div class="card-header">
-    <h3>Ajouter une tâche</h3>
+<div class="todo-form-container">
+  <div class="todo-form-header">
+    <h4>Ajouter une tâche</h4>
   </div>
 
-  <div class="card-body">
+  <div class="todo-form-body">
     <!-- ✅ Champ de saisie de la tâche -->
-    <div class="mb-3">
-      <label for="taskInput" class="form-label">Nouvelle tâche</label>
-      <input id="taskInput" type="text" class="form-control" [(ngModel)]="newTask" placeholder="Saisir une tâche">
+    <div class="input-group">
+      <input id="taskInput" type="text" class="todo-input" [(ngModel)]="newTask" placeholder="Saisir une tâche">
     </div>
 
     <!-- ✅ Bouton Ajouter -->
-    <button class="btn btn-primary w-100" (click)="addTask()">Ajouter</button>
+    <button class="todo-button" (click)="addTask()">Ajouter</button>
   </div>
 </div>

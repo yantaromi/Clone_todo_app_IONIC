@@ -15,11 +15,21 @@ import { Task } from './models/task.model'; // ✅ Import du modèle de tâche
 export class AppComponent implements OnInit {
   title = 'Ma To-Do List';
   tasks: Task[] = []; // ✅ Liste des tâches
+  currentDate: string = ''; // ✅ Date du jour
 
   constructor(private todoService: TodoService, private cdr: ChangeDetectorRef) {}
 
   ngOnInit(): void {
     this.loadTasks(); // ✅ Charger les tâches au démarrage
+    this.updateDate(); // ✅ Mettre à jour la date chaque jour
+  }
+
+  /**
+   * 📌 Met à jour la date du jour
+   */
+  updateDate(): void {
+    const today = new Date();
+    this.currentDate = today.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
   }
 
   /**
@@ -28,14 +38,24 @@ export class AppComponent implements OnInit {
   loadTasks(): void {
     this.tasks = this.todoService.getTasks();
 
-   /**  // ✅ Attendre un instant avant de vérifier si toutes les tâches sont complétées
+    // ✅ Attendre un instant avant de vérifier si toutes les tâches sont complétées
     setTimeout(() => {
       const allCompleted = this.tasks.length > 0 && this.tasks.every(task => task.completed);
       if (allCompleted) {
-        this.launchConfetti();
+        // this.launchConfetti(); // 🎊 Désactivé temporairement
       }
       this.cdr.detectChanges(); // ✅ Force la mise à jour d'Angular
-    }, 100);*/
+    }, 100);
+  }
+
+  /**
+   * 📌 Ajouter une nouvelle tâche et mettre à jour l'affichage
+   */
+  addTask(newTaskTitle: string): void {
+    if (newTaskTitle.trim()) {
+      this.todoService.addTask(newTaskTitle.trim());
+      this.loadTasks(); // ✅ Mise à jour après ajout
+    }
   }
 
   /**
@@ -45,30 +65,4 @@ export class AppComponent implements OnInit {
     this.todoService.deleteTask(id);
     this.loadTasks(); // ✅ Mise à jour après suppression
   }
-
-  /**
-   * 📌 Déclencher les confettis 🎊 sur toute l'application
-   
-  launchConfetti(): void {
-    const confettiContainer = document.getElementById('confetti-container');
-    if (!confettiContainer) return;
-
-    for (let i = 0; i < 100; i++) { // ✅ Augmente le nombre de confettis pour un effet plus dense
-      const confetti = document.createElement('div');
-      confetti.classList.add('confetti');
-      confetti.style.position = 'fixed';
-      confetti.style.left = `${Math.random() * 100}vw`;
-      confetti.style.top = `${Math.random() * 100}vh`;
-      const colors = ['red', 'yellow', 'blue', 'green', 'orange', 'pink', 'purple', 'lime', 'cyan'];
-      confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-      const size = Math.random() * 12 + 5;
-      confetti.style.width = `${size}px`;
-      confetti.style.height = `${size}px`;
-      confetti.style.animationDuration = `${Math.random() * 3 + 2}s`;
-      confettiContainer.appendChild(confetti);
-      setTimeout(() => {
-        confetti.remove();
-      }, 5000);
-    }
-  }*/
 }
