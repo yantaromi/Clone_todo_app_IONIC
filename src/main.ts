@@ -1,12 +1,12 @@
 import { bootstrapApplication } from '@angular/platform-browser';
 import { importProvidersFrom } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { HttpClientModule } from '@angular/common/http'; // ✅ Import du module HTTP
+import { provideHttpClient } from '@angular/common/http'; // ✅ Remplace HttpClientModule par provideHttpClient()
 
 import { AppComponent } from './app/app.component'; // ✅ Vérifie que cet import est correct
-import { TodoListComponent } from './app/components/todo-list/todo-list.component'; // ✅ Vérifie cet import
+import { TodoListComponent } from './app/components/todo-list/todo-list.component';
 import { TodoFormComponent } from './app/components/todo-form/todo-form.component';
-import { provideAnimationsAsync } from '@angular/platform-browser/animations/async'; // ✅ Vérifie cet import
+import { provideAnimations } from '@angular/platform-browser/animations'; // ✅ Remplace provideAnimationsAsync()
 
 import { TodoService } from './app/services/todo.service';
 import { CalendarService } from './app/services/calendar.service';
@@ -21,8 +21,8 @@ const routes: Routes = [
 bootstrapApplication(AppComponent, {
   providers: [
     importProvidersFrom(RouterModule.forRoot(routes)),
-    importProvidersFrom(HttpClientModule), // ✅ Ajout de HttpClientModule pour éviter les erreurs liées à HttpClient
-    provideAnimationsAsync(),
+    provideHttpClient(), // ✅ Nouvelle méthode recommandée pour HttpClient
+    provideAnimations(), // ✅ Corrigé : `provideAnimationsAsync()` n'existe pas
     TodoService,
     CalendarService
   ]

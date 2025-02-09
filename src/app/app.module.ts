@@ -2,7 +2,7 @@ import { bootstrapApplication } from '@angular/platform-browser';
 import { AppComponent } from './app.component';
 import { importProvidersFrom } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { HttpClientModule } from '@angular/common/http';
+import { provideHttpClient } from '@angular/common/http'; // ✅ Remplacement de HttpClientModule par provideHttpClient()
 
 import { TodoListComponent } from './components/todo-list/todo-list.component';
 import { TodoFormComponent } from './components/todo-form/todo-form.component';
@@ -18,7 +18,7 @@ const routes: Routes = [
 bootstrapApplication(AppComponent, {
   providers: [
     importProvidersFrom(RouterModule.forRoot(routes)), // ✅ Ajout du RouterModule
-    importProvidersFrom(HttpClientModule), // ✅ Ajout de HttpClientModule pour API Google
+    provideHttpClient(), // ✅ Remplace HttpClientModule
     TodoService, // ✅ Ajout du service To-Do
     CalendarService // ✅ Ajout du service Google Calendar
   ]

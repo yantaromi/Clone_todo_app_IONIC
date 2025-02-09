@@ -1,8 +1,9 @@
-import { Component, OnInit, Renderer2 } from '@angular/core';
+import { Component, OnInit, OnDestroy, Renderer2 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TodoService } from '../../services/todo.service';
-import { CalendarService } from '../../services/calendar.service'; // ✅ Ajout du service Google Calendar
+import { CalendarService } from '../../services/calendar.service';
 import { Task } from '../../models/task.model';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-todo-list',
@@ -11,82 +12,86 @@ import { Task } from '../../models/task.model';
   templateUrl: './todo-list.component.html',
   styleUrls: ['./todo-list.component.scss']
 })
-export class TodoListComponent implements OnInit {
-  tasks: Task[] = []; // ✅ Liste des tâches
-  progress: number = 0; // ✅ Pourcentage d'avancement des tâches
-  motivationMessage: string = ''; // ✅ Message dynamique
-  private nextId: number = Date.now(); // ✅ Génère des ID uniques pour chaque tâche
+export class TodoListComponent implements OnInit, OnDestroy {
+  tasks: Task[] = [];
+  progress: number = 0;
+  motivationMessage: string = '';
+  private nextId: number = Date.now();
+  private cleanupTimer: any;
+  private tasksSubscription!: Subscription;
 
   constructor(private todoService: TodoService, private calendarService: CalendarService, private renderer: Renderer2) {}
 
   ngOnInit(): void {
-    this.loadTasks();
-    this.loadPublicCalendarEvents(); // ✅ Charger les événements Google Calendar
+    this.tasksSubscription = this.todoService.tasks$.subscribe(updatedTasks => {
+      this.tasks = updatedTasks;
+      this.updateProgress();
+    });
+    this.loadTodayCalendarEvents();
+    this.scheduleDailyCleanup();
   }
 
-  /**
-   * 📌 Retourne le nombre de tâches complétées
-   */
+  ngOnDestroy(): void {
+    if (this.cleanupTimer) {
+      clearTimeout(this.cleanupTimer);
+    }
+    if (this.tasksSubscription) {
+      this.tasksSubscription.unsubscribe(); // ✅ Nettoyage de l'abonnement pour éviter les fuites de mémoire
+    }
+  }
+
   getCompletedTasksCount(): number {
     return this.tasks.filter(task => task.completed).length;
   }
 
-  /**
-   * 📌 Charger les tâches depuis le service et mettre à jour la progression
-   */
-  loadTasks(): void {
-    this.tasks = this.todoService.getTasks();
-    this.updateProgress();
-  }
-
-  /**
-   * 📌 Charger les événements publics depuis Google Calendar
-   */
-  loadPublicCalendarEvents(): void {
-    this.calendarService.getPublicEvents().subscribe((response: any) => {
+  loadTodayCalendarEvents(): void {
+    this.calendarService.getTodayEvents().subscribe((response: any) => {
       const events = response.items || [];
       events.forEach((event: any) => {
         if (!this.tasks.find(task => task.title === event.summary)) {
-          this.tasks.push({ id: this.nextId++, title: event.summary, completed: false });
+          this.todoService.addTask(event.summary);
         }
       });
     });
   }
 
-  /**
-   * 📌 Ajouter une tâche manuellement
-   */
+  scheduleDailyCleanup(): void {
+    const now = new Date();
+    const testTime = new Date();
+    testTime.setMinutes(testTime.getMinutes() + 2); // 🔄 Réinitialisation dans 2 minutes pour test
+    
+    const timeUntilReset = testTime.getTime() - now.getTime();
+    console.log(`🕛 Suppression prévue dans ${timeUntilReset / 1000 / 60} minutes`);
+
+    this.cleanupTimer = setTimeout(() => {
+      this.removeCompletedTasks();
+      this.loadTodayCalendarEvents();
+      this.scheduleDailyCleanup();
+    }, timeUntilReset);
+  }
+
+  removeCompletedTasks(): void {
+    this.todoService.removeCompletedTasks();
+    this.updateProgress(); // ✅ Mise à jour de la progression après suppression
+    console.log('✅ Tâches complétées supprimées et sauvegardées.');
+  }
+
   addTask(title: string): void {
     if (title.trim()) {
-      this.tasks.push({ id: this.nextId++, title, completed: false });
-      this.updateProgress();
+      this.todoService.addTask(title.trim());
     }
   }
 
-  /**
-   * 📌 Supprimer une tâche et mettre à jour la liste des tâches
-   */
   removeTask(id: number, event: MouseEvent): void {
-    event.stopPropagation(); // ✅ Empêche l'événement de se propager
-    this.tasks = this.tasks.filter(task => task.id !== id);
-    this.updateProgress();
+    event.stopPropagation();
+    this.todoService.deleteTask(id);
   }
 
-  /**
-   * 📌 Changer l’état d’une tâche et mettre à jour la progression
-   */
   toggleCompletion(id: number, event: MouseEvent): void {
-    event.stopPropagation(); // ✅ Empêche l'événement de se propager
-    const task = this.tasks.find(task => task.id === id);
-    if (task) {
-      task.completed = !task.completed;
-      this.updateProgress();
-    }
+    event.stopPropagation();
+    this.todoService.toggleTaskCompletion(id);
   }
 
-  /**
-   * 📌 Mettre à jour la progression et afficher un message motivant
-   */
   updateProgress(): void {
     const completedTasks = this.getCompletedTasksCount();
     const totalTasks = this.tasks.length;
@@ -94,9 +99,6 @@ export class TodoListComponent implements OnInit {
     this.updateMotivationMessage();
   }
 
-  /**
-   * 📌 Déterminer le message de motivation selon la progression
-   */
   updateMotivationMessage(): void {
     if (this.progress >= 75 && this.progress < 100) {
       this.motivationMessage = '🔥 Dernière ligne droite, on lâche pas !';
