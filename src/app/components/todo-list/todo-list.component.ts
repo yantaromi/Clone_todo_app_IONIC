@@ -1,5 +1,6 @@
-import { Component, OnInit, OnDestroy, Renderer2 } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms'; // ✅ Importation nécessaire pour [(ngModel)]
 import { TodoService } from '../../services/todo.service';
 import { CalendarService } from '../../services/calendar.service';
 import { Task } from '../../models/task.model';
@@ -8,25 +9,26 @@ import { Subscription } from 'rxjs';
 @Component({
   selector: 'app-todo-list',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule], // ✅ Ajout de FormsModule pour éviter l'erreur [(ngModel)]
   templateUrl: './todo-list.component.html',
   styleUrls: ['./todo-list.component.scss']
 })
 export class TodoListComponent implements OnInit, OnDestroy {
   tasks: Task[] = [];
+  newTaskTitle: string = ''; // ✅ Ajout de la variable pour le binding [(ngModel)]
   progress: number = 0;
   motivationMessage: string = '';
   private tasksSubscription!: Subscription;
   private cleanupTimer: any;
 
-  constructor(private todoService: TodoService, private calendarService: CalendarService, private renderer: Renderer2) {}
+  constructor(private todoService: TodoService, private calendarService: CalendarService) {}
 
   ngOnInit(): void {
     this.tasksSubscription = this.todoService.tasks$.subscribe(updatedTasks => {
       this.tasks = updatedTasks;
       this.updateProgress();
     });
-    this.loadTodayCalendarEvents();
+
     this.scheduleDailyCleanup();
   }
 
@@ -39,16 +41,7 @@ export class TodoListComponent implements OnInit, OnDestroy {
     }
   }
 
-  /**
-   * 📌 Permet d'optimiser le rendu Angular en évitant le rechargement complet de la liste
-   * @param index - Index de l'élément dans la liste
-   * @param task - Objet tâche
-   * @returns L'identifiant unique de la tâche
-   */
-  trackById(index: number, task: Task): number {
-    return task.id;
-  }
-
+  /** 📌 Charge les tâches du calendrier Google lors du clic sur "Sync Calendar" */
   loadTodayCalendarEvents(): void {
     this.calendarService.getTodayEvents().subscribe((response: any) => {
       const events = response.items || [];
@@ -60,35 +53,40 @@ export class TodoListComponent implements OnInit, OnDestroy {
     });
   }
 
+  /** 📌 Supprime les tâches complétées automatiquement à minuit */
   scheduleDailyCleanup(): void {
     const now = new Date();
     const midnight = new Date();
     midnight.setHours(24, 0, 0, 0);
     const timeUntilMidnight = midnight.getTime() - now.getTime();
 
-    this.cleanupTimer = setTimeout(() => {
+    setTimeout(() => {
       this.todoService.removeCompletedTasks();
-      this.loadTodayCalendarEvents();
       this.scheduleDailyCleanup();
     }, timeUntilMidnight);
   }
 
-  addTask(title: string): void {
-    if (title.trim()) {
-      this.todoService.addTask(title.trim());
+  /** 📌 Ajoute une nouvelle tâche */
+  addTask(): void {
+    if (this.newTaskTitle.trim()) {
+      this.todoService.addTask(this.newTaskTitle.trim());
+      this.newTaskTitle = ''; // ✅ Réinitialiser l'input après ajout
     }
   }
 
+  /** 📌 Supprime une tâche */
   removeTask(id: number, event: MouseEvent): void {
     event.stopPropagation();
     this.todoService.deleteTask(id);
   }
 
+  /** 📌 Marque une tâche comme terminée */
   toggleCompletion(id: number, event: MouseEvent): void {
     event.stopPropagation();
     this.todoService.toggleTaskCompletion(id);
   }
 
+  /** 📌 Mise à jour de la progression */
   updateProgress(): void {
     const completedTasks = this.tasks.filter(task => task.completed).length;
     const totalTasks = this.tasks.length;
@@ -96,6 +94,7 @@ export class TodoListComponent implements OnInit, OnDestroy {
     this.updateMotivationMessage();
   }
 
+  /** 📌 Affichage du message de motivation */
   updateMotivationMessage(): void {
     if (this.progress >= 75 && this.progress < 100) {
       this.motivationMessage = '🔥 Dernière ligne droite, on lâche pas !';
@@ -108,5 +107,10 @@ export class TodoListComponent implements OnInit, OnDestroy {
     } else {
       this.motivationMessage = '';
     }
+  }
+
+  /** 📌 Optimisation de l'affichage des tâches */
+  trackById(index: number, task: Task): number {
+    return task.id;
   }
 }
