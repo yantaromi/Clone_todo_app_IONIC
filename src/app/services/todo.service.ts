@@ -7,8 +7,8 @@ import { BehaviorSubject } from 'rxjs';
 })
 export class TodoService {
   private tasks: Task[] = this.loadTasks(); // ✅ Chargement initial des tâches depuis localStorage
-  private tasksSubject = new BehaviorSubject<Task[]>(this.tasks); // ✅ Observable pour la mise à jour en temps réel des tâches
-  tasks$ = this.tasksSubject.asObservable(); // ✅ Observable accessible depuis d'autres composants
+  private tasksSubject = new BehaviorSubject<Task[]>(this.tasks); // ✅ Observable pour mise à jour des tâches en temps réel
+  tasks$ = this.tasksSubject.asObservable(); // ✅ Observable accessible depuis les composants
 
   constructor() {
     // 🔄 Sauvegarde automatique lorsqu'un changement est détecté sur les tâches
@@ -22,7 +22,7 @@ export class TodoService {
    * @returns Liste des tâches
    */
   getTasks(): Task[] {
-    return [...this.tasks]; // ✅ Retourne une copie pour éviter toute mutation accidentelle
+    return [...this.tasks]; // ✅ Retourne une copie pour éviter toute modification accidentelle
   }
 
   /**
@@ -34,8 +34,7 @@ export class TodoService {
     const newTask: Task = { id: Date.now(), title, completed: false };
     this.tasks.push(newTask);
     this.tasksSubject.next([...this.tasks]); // ✅ Mise à jour de l'observable
-    this.saveTasks(); // ✅ Sauvegarde immédiate après ajout
-    console.log('Tâche ajoutée :', newTask);
+    console.log('✅ Tâche ajoutée :', newTask);
   }
 
   /**
@@ -45,8 +44,7 @@ export class TodoService {
   deleteTask(id: number): void {
     this.tasks = this.tasks.filter(task => task.id !== id);
     this.tasksSubject.next([...this.tasks]); // ✅ Mise à jour de l'observable
-    this.saveTasks(); // ✅ Assurer la sauvegarde immédiate
-    console.log('Tâche supprimée, ID:', id);
+    console.log('🗑️ Tâche supprimée, ID:', id);
   }
 
   /**
@@ -58,8 +56,7 @@ export class TodoService {
     if (task) {
       task.completed = !task.completed;
       this.tasksSubject.next([...this.tasks]); // ✅ Mise à jour de l'observable
-      this.saveTasks(); // ✅ Assurer la sauvegarde immédiate
-      console.log('État de la tâche changé, ID:', id, 'Complétée:', task.completed);
+      console.log('🔄 État de la tâche changé, ID:', id, 'Complétée:', task.completed);
     }
   }
 
@@ -71,30 +68,21 @@ export class TodoService {
     
     // ✅ Supprime les tâches complétées en mémoire
     this.tasks = this.tasks.filter(task => !task.completed);
-  
-    // ✅ Écrase immédiatement `localStorage` avec la liste mise à jour
-    this.saveTasks();
-  
+
     // ✅ Met à jour l'interface utilisateur
     this.tasksSubject.next([...this.tasks]);
-  
+
     console.log("✅ Tâches restantes après suppression :", this.tasks);
   }
   
   /**
    * 📌 Sauvegarder les tâches dans `localStorage`
    */
-  public saveTasks(): void {
-    console.log("💾 Sauvegarde forcée des tâches :", this.tasks);
+  private saveTasks(): void {
+    console.log("💾 Sauvegarde des tâches :", this.tasks);
     
     // ✅ Vérifier si les tâches ont changé avant de sauvegarder
-    const currentTasks = JSON.stringify(this.tasks);
-    const storedTasks = localStorage.getItem('tasks');
-    
-    if (storedTasks !== currentTasks) {
-      localStorage.setItem('tasks', currentTasks); // ✅ Écrit uniquement les nouvelles tâches
-      this.tasksSubject.next([...this.tasks]); // ✅ Mise à jour immédiate après sauvegarde
-    }
+    localStorage.setItem('tasks', JSON.stringify(this.tasks)); // ✅ Enregistre les nouvelles tâches
   }
   
   /**

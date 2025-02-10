@@ -16,9 +16,8 @@ export class TodoListComponent implements OnInit, OnDestroy {
   tasks: Task[] = [];
   progress: number = 0;
   motivationMessage: string = '';
-  private nextId: number = Date.now();
-  private cleanupTimer: any;
   private tasksSubscription!: Subscription;
+  private cleanupTimer: any;
 
   constructor(private todoService: TodoService, private calendarService: CalendarService, private renderer: Renderer2) {}
 
@@ -27,7 +26,6 @@ export class TodoListComponent implements OnInit, OnDestroy {
       this.tasks = updatedTasks;
       this.updateProgress();
     });
-    this.loadTasks();
     this.loadTodayCalendarEvents();
     this.scheduleDailyCleanup();
   }
@@ -37,17 +35,18 @@ export class TodoListComponent implements OnInit, OnDestroy {
       clearTimeout(this.cleanupTimer);
     }
     if (this.tasksSubscription) {
-      this.tasksSubscription.unsubscribe(); // ✅ Nettoyage de l'abonnement pour éviter les fuites de mémoire
+      this.tasksSubscription.unsubscribe();
     }
   }
 
-  getCompletedTasksCount(): number {
-    return this.tasks.filter(task => task.completed).length;
-  }
-
-  loadTasks(): void {
-    this.tasks = this.todoService.getTasks();
-    this.updateProgress();
+  /**
+   * 📌 Permet d'optimiser le rendu Angular en évitant le rechargement complet de la liste
+   * @param index - Index de l'élément dans la liste
+   * @param task - Objet tâche
+   * @returns L'identifiant unique de la tâche
+   */
+  trackById(index: number, task: Task): number {
+    return task.id;
   }
 
   loadTodayCalendarEvents(): void {
@@ -56,7 +55,6 @@ export class TodoListComponent implements OnInit, OnDestroy {
       events.forEach((event: any) => {
         if (!this.tasks.find(task => task.title === event.summary)) {
           this.todoService.addTask(event.summary);
-          this.loadTasks(); // ✅ Recharger les tâches après ajout d'un événement du calendrier
         }
       });
     });
@@ -65,46 +63,34 @@ export class TodoListComponent implements OnInit, OnDestroy {
   scheduleDailyCleanup(): void {
     const now = new Date();
     const midnight = new Date();
-    midnight.setHours(24, 0, 0, 0); // ✅ Planification de la suppression à minuit
-    
+    midnight.setHours(24, 0, 0, 0);
     const timeUntilMidnight = midnight.getTime() - now.getTime();
-    console.log(`🕛 Suppression prévue dans ${timeUntilMidnight / 1000 / 60 / 60} heures`);
 
     this.cleanupTimer = setTimeout(() => {
-      this.removeCompletedTasks();
+      this.todoService.removeCompletedTasks();
       this.loadTodayCalendarEvents();
       this.scheduleDailyCleanup();
     }, timeUntilMidnight);
   }
 
-  removeCompletedTasks(): void {
-    this.todoService.removeCompletedTasks();
-    this.loadTasks(); // ✅ Recharger les tâches après suppression
-    this.updateProgress();
-    console.log('✅ Tâches complétées supprimées et sauvegardées.');
-  }
-
   addTask(title: string): void {
     if (title.trim()) {
       this.todoService.addTask(title.trim());
-      this.loadTasks(); // ✅ Recharger les tâches après ajout
     }
   }
 
   removeTask(id: number, event: MouseEvent): void {
     event.stopPropagation();
     this.todoService.deleteTask(id);
-    this.loadTasks(); // ✅ Recharger les tâches après suppression
   }
 
   toggleCompletion(id: number, event: MouseEvent): void {
     event.stopPropagation();
     this.todoService.toggleTaskCompletion(id);
-    this.loadTasks(); // ✅ Recharger les tâches après modification
   }
 
   updateProgress(): void {
-    const completedTasks = this.getCompletedTasksCount();
+    const completedTasks = this.tasks.filter(task => task.completed).length;
     const totalTasks = this.tasks.length;
     this.progress = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
     this.updateMotivationMessage();
