@@ -23,7 +23,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.updateDate(); // ✅ Mettre à jour la date chaque jour
-    this.removeCompletedTasksOnStartup(); // ✅ Supprimer les tâches complétées au démarrage
+    this.loadTasks(); // ✅ Charger les tâches sans supprimer celles complétées au démarrage
 
     // ✅ Abonnement aux tâches pour mise à jour automatique
     this.tasksSubscription = this.todoService.tasks$.subscribe(updatedTasks => {
@@ -44,25 +44,28 @@ export class AppComponent implements OnInit, OnDestroy {
     this.currentDate = today.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
   }
 
-  /** 📌 Supprime les tâches complétées au démarrage */
-  removeCompletedTasksOnStartup(): void {
-    this.todoService.removeCompletedTasks();
+  /** 📌 Charger les tâches sans supprimer celles accomplies */
+  loadTasks(): void {
+    this.tasks = this.todoService.getTasks();
   }
 
   /** 📌 Ajouter une nouvelle tâche */
   addTask(newTaskTitle: string): void {
     if (newTaskTitle.trim()) {
       this.todoService.addTask(newTaskTitle.trim());
+      this.loadTasks(); // ✅ Recharger les tâches après ajout
     }
   }
 
   /** 📌 Supprimer une tâche */
   removeTask(id: number): void {
     this.todoService.deleteTask(id);
+    this.loadTasks(); // ✅ Recharger les tâches après suppression
   }
 
   /** 📌 Bascule l'état de complétion d'une tâche */
   toggleCompletion(id: number): void {
     this.todoService.toggleTaskCompletion(id);
+    this.loadTasks(); // ✅ Recharger les tâches après modification
   }
 }

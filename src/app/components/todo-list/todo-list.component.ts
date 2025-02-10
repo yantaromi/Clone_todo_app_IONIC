@@ -27,6 +27,7 @@ export class TodoListComponent implements OnInit, OnDestroy {
       this.tasks = updatedTasks;
       this.updateProgress();
     });
+    this.loadTasks();
     this.loadTodayCalendarEvents();
     this.scheduleDailyCleanup();
   }
@@ -44,12 +45,18 @@ export class TodoListComponent implements OnInit, OnDestroy {
     return this.tasks.filter(task => task.completed).length;
   }
 
+  loadTasks(): void {
+    this.tasks = this.todoService.getTasks();
+    this.updateProgress();
+  }
+
   loadTodayCalendarEvents(): void {
     this.calendarService.getTodayEvents().subscribe((response: any) => {
       const events = response.items || [];
       events.forEach((event: any) => {
         if (!this.tasks.find(task => task.title === event.summary)) {
           this.todoService.addTask(event.summary);
+          this.loadTasks(); // ✅ Recharger les tâches après ajout d'un événement du calendrier
         }
       });
     });
@@ -57,39 +64,43 @@ export class TodoListComponent implements OnInit, OnDestroy {
 
   scheduleDailyCleanup(): void {
     const now = new Date();
-    const testTime = new Date();
-    testTime.setMinutes(testTime.getMinutes() + 2); // 🔄 Réinitialisation dans 2 minutes pour test
+    const midnight = new Date();
+    midnight.setHours(24, 0, 0, 0); // ✅ Planification de la suppression à minuit
     
-    const timeUntilReset = testTime.getTime() - now.getTime();
-    console.log(`🕛 Suppression prévue dans ${timeUntilReset / 1000 / 60} minutes`);
+    const timeUntilMidnight = midnight.getTime() - now.getTime();
+    console.log(`🕛 Suppression prévue dans ${timeUntilMidnight / 1000 / 60 / 60} heures`);
 
     this.cleanupTimer = setTimeout(() => {
       this.removeCompletedTasks();
       this.loadTodayCalendarEvents();
       this.scheduleDailyCleanup();
-    }, timeUntilReset);
+    }, timeUntilMidnight);
   }
 
   removeCompletedTasks(): void {
     this.todoService.removeCompletedTasks();
-    this.updateProgress(); // ✅ Mise à jour de la progression après suppression
+    this.loadTasks(); // ✅ Recharger les tâches après suppression
+    this.updateProgress();
     console.log('✅ Tâches complétées supprimées et sauvegardées.');
   }
 
   addTask(title: string): void {
     if (title.trim()) {
       this.todoService.addTask(title.trim());
+      this.loadTasks(); // ✅ Recharger les tâches après ajout
     }
   }
 
   removeTask(id: number, event: MouseEvent): void {
     event.stopPropagation();
     this.todoService.deleteTask(id);
+    this.loadTasks(); // ✅ Recharger les tâches après suppression
   }
 
   toggleCompletion(id: number, event: MouseEvent): void {
     event.stopPropagation();
     this.todoService.toggleTaskCompletion(id);
+    this.loadTasks(); // ✅ Recharger les tâches après modification
   }
 
   updateProgress(): void {
