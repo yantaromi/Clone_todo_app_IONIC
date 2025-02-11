@@ -4,15 +4,8 @@
   </div>
 
   <div class="todo-list-body">
-    <!-- ✅ Input pour ajouter une tâche -->
-    <div class="task-input-container">
-      <input type="text" [(ngModel)]="newTaskTitle" placeholder="Ajouter une tâche..." class="form-control">
-      <button class="btn btn-primary" (click)="addTask()">Ajouter</button>
-      <button class="btn btn-secondary ms-2" (click)="loadTodayCalendarEvents()">Sync Calendar</button> <!-- ✅ Ajout du bouton -->
-    </div>
-
     <!-- ✅ Barre de progression animée -->
-    <div class="progress mt-3">
+    <div class="progress mb-3">
       <div class="progress-bar progress-bar-striped progress-bar-animated" 
            role="progressbar" 
            [style.width.%]="progress"
@@ -25,6 +18,9 @@
     <p *ngIf="motivationMessage" class="motivation-message">
       {{ motivationMessage }}
     </p>
+
+    <!-- ✅ Conteneur des confettis -->
+    <div id="confetti-container"></div>
 
     <!-- ✅ Liste des tâches -->
     <ul class="todo-list">

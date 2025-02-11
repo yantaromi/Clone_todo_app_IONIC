@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms'; // ✅ Importation nécessaire pour [(ngModel)]
 import { TodoService } from '../../services/todo.service';
+import { FormsModule } from '@angular/forms';
 import { CalendarService } from '../../services/calendar.service';
 import { Task } from '../../models/task.model';
 import { Subscription } from 'rxjs';
@@ -9,15 +9,15 @@ import { Subscription } from 'rxjs';
 @Component({
   selector: 'app-todo-list',
   standalone: true,
-  imports: [CommonModule, FormsModule], // ✅ Ajout de FormsModule pour éviter l'erreur [(ngModel)]
+  imports: [CommonModule, FormsModule],
   templateUrl: './todo-list.component.html',
   styleUrls: ['./todo-list.component.scss']
 })
 export class TodoListComponent implements OnInit, OnDestroy {
   tasks: Task[] = [];
-  newTaskTitle: string = ''; // ✅ Ajout de la variable pour le binding [(ngModel)]
-  progress: number = 0;
-  motivationMessage: string = '';
+  progress: number = 0; // ✅ Ajout de la variable progress
+  motivationMessage: string = ''; // ✅ Ajout de la variable motivationMessage
+  newTaskTitle: string = ''; // ✅ Ajout d'une variable pour l'entrée utilisateur
   private tasksSubscription!: Subscription;
   private cleanupTimer: any;
 
@@ -28,8 +28,6 @@ export class TodoListComponent implements OnInit, OnDestroy {
       this.tasks = updatedTasks;
       this.updateProgress();
     });
-
-    this.scheduleDailyCleanup();
   }
 
   ngOnDestroy(): void {
@@ -41,8 +39,35 @@ export class TodoListComponent implements OnInit, OnDestroy {
     }
   }
 
-  /** 📌 Charge les tâches du calendrier Google lors du clic sur "Sync Calendar" */
-  loadTodayCalendarEvents(): void {
+  /**
+   * 📌 Optimisation de l'affichage des listes avec trackBy pour éviter des re-rendus inutiles
+   */
+  trackById(index: number, task: Task): number {
+    return task.id;
+  }
+
+  /** 📌 Ajouter une tâche */
+  addTask(): void {
+    if (this.newTaskTitle.trim()) {
+      this.todoService.addTask(this.newTaskTitle.trim());
+      this.newTaskTitle = ''; // ✅ Réinitialiser le champ après ajout
+    }
+  }
+
+  /** 📌 Supprimer une tâche */
+  removeTask(id: number, event: MouseEvent): void {
+    event.stopPropagation(); // ✅ Empêche l'activation du toggle si on clique sur le bouton
+    this.todoService.deleteTask(id);
+  }
+
+  /** 📌 Bascule l'état de complétion d'une tâche */
+  toggleCompletion(id: number, event: MouseEvent): void {
+    event.stopPropagation(); // ✅ Empêche un conflit avec la suppression
+    this.todoService.toggleTaskCompletion(id);
+  }
+
+  /** 📌 Synchroniser les tâches avec Google Calendar */
+  syncCalendarTasks(): void {
     this.calendarService.getTodayEvents().subscribe((response: any) => {
       const events = response.items || [];
       events.forEach((event: any) => {
@@ -53,39 +78,6 @@ export class TodoListComponent implements OnInit, OnDestroy {
     });
   }
 
-  /** 📌 Supprime les tâches complétées automatiquement à minuit */
-  scheduleDailyCleanup(): void {
-    const now = new Date();
-    const midnight = new Date();
-    midnight.setHours(24, 0, 0, 0);
-    const timeUntilMidnight = midnight.getTime() - now.getTime();
-
-    setTimeout(() => {
-      this.todoService.removeCompletedTasks();
-      this.scheduleDailyCleanup();
-    }, timeUntilMidnight);
-  }
-
-  /** 📌 Ajoute une nouvelle tâche */
-  addTask(): void {
-    if (this.newTaskTitle.trim()) {
-      this.todoService.addTask(this.newTaskTitle.trim());
-      this.newTaskTitle = ''; // ✅ Réinitialiser l'input après ajout
-    }
-  }
-
-  /** 📌 Supprime une tâche */
-  removeTask(id: number, event: MouseEvent): void {
-    event.stopPropagation();
-    this.todoService.deleteTask(id);
-  }
-
-  /** 📌 Marque une tâche comme terminée */
-  toggleCompletion(id: number, event: MouseEvent): void {
-    event.stopPropagation();
-    this.todoService.toggleTaskCompletion(id);
-  }
-
   /** 📌 Mise à jour de la progression */
   updateProgress(): void {
     const completedTasks = this.tasks.filter(task => task.completed).length;
@@ -94,7 +86,7 @@ export class TodoListComponent implements OnInit, OnDestroy {
     this.updateMotivationMessage();
   }
 
-  /** 📌 Affichage du message de motivation */
+  /** 📌 Mise à jour du message de motivation */
   updateMotivationMessage(): void {
     if (this.progress >= 75 && this.progress < 100) {
       this.motivationMessage = '🔥 Dernière ligne droite, on lâche pas !';
@@ -107,10 +99,5 @@ export class TodoListComponent implements OnInit, OnDestroy {
     } else {
       this.motivationMessage = '';
     }
-  }
-
-  /** 📌 Optimisation de l'affichage des tâches */
-  trackById(index: number, task: Task): number {
-    return task.id;
   }
 }

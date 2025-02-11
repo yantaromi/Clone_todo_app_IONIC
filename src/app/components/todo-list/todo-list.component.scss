@@ -1,88 +1,43 @@
-/* ✅ Conteneur global du composant Todo-List */
-.todo-list-container {
-  max-width: 600px;
-  background: #ffffff;
-  border-radius: 10px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.05);
-  padding: 20px;
-  text-align: center;
-  border: 1px solid #ddd;
-}
+.todo-list {
+  list-style: none;
+  padding: 0;
 
-/* ✅ Liste des tâches */
-.list-group-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px;
-  border-radius: 5px;
-  background: #fff;
-  margin-bottom: 8px;
-  border: 1px solid #e0e0e0;
-}
+  .todo-list-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center; // ✅ Alignement vertical des éléments
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
 
-/* ✅ Trait épais pour les tâches barrées */
-.text-decoration-line-through {
-  text-decoration: line-through;
-  text-decoration-thickness: 2px;
-  color: #999;
-}
+    .task-title {
+      flex-grow: 1; // ✅ Prend l'espace disponible
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis; // ✅ Coupe le texte trop long avec "..."
+      cursor: pointer;
+    }
 
-/* ✅ Effet de survol */
-.list-group-item:hover {
-  background-color: #f8f8f8;
-}
+    .task-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px; // ✅ Espacement entre les boutons
+    }
 
-/* ✅ Conteneur global des confettis */
-#confetti-container {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  pointer-events: none;
-  overflow: hidden;
-  z-index: 9999;
-}
+    .todo-btn {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      border-radius: 50%;
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: transform 0.2s ease-in-out;
 
-/* ✅ Confettis */
-.confetti {
-  position: absolute;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  opacity: 0.8;
-  animation: fall linear infinite;
-}
-
-/* ✅ Animation des confettis */
-@keyframes fall {
-  0% {
-      transform: translateY(0) rotate(0deg);
+      &:hover {
+        transform: scale(1.1);
+      }
+    }
   }
-  100% {
-      transform: translateY(100vh) rotate(360deg);
-  }
-}
-
-/* ✅ Variations de couleurs des confettis */
-.confetti:nth-child(1) { background-color: red; }
-.confetti:nth-child(2) { background-color: yellow; }
-.confetti:nth-child(3) { background-color: blue; }
-.confetti:nth-child(4) { background-color: green; }
-.confetti:nth-child(5) { background-color: orange; }
-.confetti:nth-child(6) { background-color: violet; }
-.confetti:nth-child(7) { background-color: cyan; }
-.confetti:nth-child(8) { background-color: pink; }
-.confetti:nth-child(9) { background-color: lime; }
-
-/* ✅ Variation de taille des confettis */
-.confetti:nth-child(even) {
-  width: 12px;
-  height: 12px;
-}
-
-.confetti:nth-child(odd) {
-  width: 8px;
-  height: 8px;
 }
