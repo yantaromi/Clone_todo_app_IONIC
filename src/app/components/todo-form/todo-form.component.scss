@@ -19,6 +19,7 @@
     font-size: 16px;
     outline: none;
     transition: border 0.3s;
+    flex: 1; // ✅ Prend tout l'espace restant
 }
 
 .todo-input:focus {
@@ -27,18 +28,43 @@
 
 /* ✅ Bouton Ajouter */
 .todo-button {
-    width: 100%;
-    padding: 10px;
     background-color: #232224;
     color: white;
     border: none;
     border-radius: 5px;
     font-size: 16px;
+    padding: 10px 15px;
     cursor: pointer;
-    transition: background 0.3s;
-    margin-top: 10px;
+    transition: background 0.3s ease-in-out;
+    flex: 1; // ✅ Ajuste les boutons pour qu'ils prennent la même largeur
 }
 
 .todo-button:hover {
     background-color: #6b6768;
+    color: white;
+}
+
+/* ✅ Bouton Sync Calendar */
+.sync-button {
+    background-color: #007bff;
+    color: white;
+}
+
+.sync-button:hover {
+    background-color: #0056b3;
+}
+
+/* ✅ Conteneur du champ de saisie */
+.input-group {
+    display: flex;
+    width: 100%;
+    gap: 8px; // ✅ Espacement entre les éléments
+}
+
+/* ✅ Conteneur des boutons (Ajouter & Sync Calendar) */
+.button-group {
+    display: flex;
+    justify-content: space-between; // ✅ Aligner les boutons côte à côte
+    gap: 10px; // ✅ Espacement entre les boutons
+    margin-top: 10px; // ✅ Espacement entre le champ et les boutons
 }

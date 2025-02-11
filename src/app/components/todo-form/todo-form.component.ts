@@ -7,20 +7,20 @@ import { CalendarService } from '../../services/calendar.service';
 @Component({
   selector: 'app-todo-form',
   standalone: true,
-  imports: [CommonModule, FormsModule], // ✅ Ajout de FormsModule pour utiliser ngModel
+  imports: [CommonModule, FormsModule], // ✅ Ajout de FormsModule pour ngModel
   templateUrl: './todo-form.component.html',
   styleUrls: ['./todo-form.component.scss']
 })
 export class TodoFormComponent {
-  newTask: string = ''; // ✅ Déclaration de `newTask` pour éviter l'erreur
+  newTaskTitle: string = ''; // ✅ Déclaration de la variable
 
   constructor(private todoService: TodoService, private calendarService: CalendarService) {}
 
   /** 📌 Ajouter une tâche */
   addTask(): void {
-    if (this.newTask.trim()) {
-      this.todoService.addTask(this.newTask.trim());
-      this.newTask = ''; // ✅ Réinitialisation après ajout
+    if (this.newTaskTitle.trim()) {
+      this.todoService.addTask(this.newTaskTitle.trim());
+      this.newTaskTitle = ''; // ✅ Réinitialisation après ajout
     }
   }
 
@@ -28,11 +28,8 @@ export class TodoFormComponent {
   syncCalendar(): void {
     this.calendarService.getTodayEvents().subscribe((response: any) => {
       const events = response.items || [];
-      events.forEach((event: any) => {
-        if (!this.todoService.getTasks().find(task => task.title === event.summary)) {
-          this.todoService.addTask(event.summary);
-        }
-      });
+      const eventTitles = events.map((event: any) => event.summary);
+      this.todoService.addTasksFromCalendar(eventTitles);
     });
   }
 }
