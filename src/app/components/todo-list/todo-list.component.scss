@@ -5,39 +5,42 @@
   .todo-list-item {
     display: flex;
     justify-content: space-between;
-    align-items: center; // ✅ Alignement vertical des éléments
+    align-items: center; // ✅ Assure l'alignement vertical des éléments
     padding: 10px;
     border-bottom: 1px solid #ddd;
+    min-height: 40px; // ✅ Empêche le texte long de pousser les boutons vers le bas
+  }
 
-    .task-title {
-      flex-grow: 1; // ✅ Prend l'espace disponible
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis; // ✅ Coupe le texte trop long avec "..."
-      cursor: pointer;
-    }
+  .task-title {
+    flex-grow: 0;  // ❌ Évite que le texte prenne tout l'espace
+    max-width: 70%; // ✅ Empêche le titre de prendre trop de place
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; // ✅ Coupe le texte trop long avec "..."
+    cursor: pointer;
+  }
 
-    .task-actions {
-      display: flex;
-      align-items: center;
-      gap: 8px; // ✅ Espacement entre les boutons
-    }
+  .task-actions {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0; // ✅ Empêche les boutons d'être réduits
+    gap: 8px; // ✅ Espacement entre les boutons
+  }
 
-    .todo-btn {
-      width: 32px;
-      height: 32px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border: none;
-      border-radius: 50%;
-      font-size: 1.2rem;
-      cursor: pointer;
-      transition: transform 0.2s ease-in-out;
+  .todo-btn {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 50%;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: transform 0.2s ease-in-out;
 
-      &:hover {
-        transform: scale(1.1);
-      }
+    &:hover {
+      transform: scale(1.1);
     }
   }
 }
