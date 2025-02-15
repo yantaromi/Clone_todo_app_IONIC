@@ -1,7 +1,7 @@
-/* ✅ Style global Minimaliste & Épuré avec arrière-plan de titre gris */
+/* ✅ Arrière-plan style carnet */
 body {
-  font-family: 'Arial', sans-serif;
-  background-color: #f4f4f4;
+  font-family: 'Caveat', cursive, 'Arial', sans-serif; // 🎨 Police manuscrite
+  background-color: #fdf7e3; // 🎨 Fond couleur papier
   color: #333;
   margin: 0;
   padding: 0;
@@ -12,10 +12,39 @@ body {
   height: 100vh;
 }
 
-/* ✅ Style du header avec fond gris */
+/* ✅ Style du carnet */
+.app-container {
+  max-width: 800px;
+  width: 90%;
+  background: #fffaf0;
+  border-radius: 12px;
+  box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  border: 2px solid #d6d1c4; // 📝 Bordure carnet
+  position: relative;
+}
+
+/* ✅ Effet de lignes de carnet */
+.app-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 20px;
+  right: 20px;
+  bottom: 0;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.1) 0px,
+    rgba(0, 0, 0, 0.1) 1px,
+    transparent 25px
+  );
+  z-index: -1;
+}
+
+/* ✅ Style du header */
 .header {
-  background-color: #d6d6d6;
-  color: #333;
+  background-color: #f4e6c4;
+  color: #4a3f35;
   padding: 15px;
   text-align: center;
   border-radius: 8px;
@@ -23,32 +52,36 @@ body {
   max-width: 600px;
   margin: 0 auto 20px auto;
   font-weight: bold;
+  box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
+  border-bottom: 3px solid #c4b49a;
 }
 
 /* ✅ Style du titre */
 h1 {
-  font-size: 24px;
+  font-size: 28px;
   margin: 0;
   text-align: center;
+  font-family: 'Caveat', cursive, 'Arial', sans-serif;
 }
 
 /* ✅ Style de la date */
 .date {
-  font-size: 14px;
+  font-size: 18px;
   font-weight: normal;
   color: #666;
   text-align: center;
+  font-style: italic;
 }
 
-/* ✅ Style du conteneur principal */
+/* ✅ Conteneur principal */
 .container {
   max-width: 600px;
-  background: #ffffff;
+  background: #fffaf0;
   border-radius: 10px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.05);
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
   padding: 20px;
   text-align: center;
-  border: 1px solid #ddd;
+  border: 2px solid #d6d1c4;
 }
 
 /* ✅ Liste des tâches */
@@ -56,21 +89,40 @@ h1 {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px;
+  padding: 12px;
   border-radius: 5px;
-  background: #fff;
+  background: #fffbf2;
   margin-bottom: 8px;
-  border: 1px solid #e0e0e0;
+  border: 1px solid #e0c8a2;
+  font-family: 'Caveat', cursive, 'Arial', sans-serif;
+  font-size: 20px;
 }
 
 /* ✅ Trait épais pour les tâches barrées */
 .text-decoration-line-through {
   text-decoration: line-through;
-  text-decoration-thickness: 2px;
+  text-decoration-thickness: 3px;
   color: #999;
 }
 
 /* ✅ Effet de survol */
 .list-group-item:hover {
-  background-color: #f8f8f8;
+  background-color: #f8e8c8;
+}
+
+/* ✅ Effet de spirale à gauche pour l'effet carnet */
+.spiral {
+  position: absolute;
+  top: 10px;
+  left: -15px;
+  height: 90%;
+  width: 10px;
+  background: repeating-linear-gradient(
+    to bottom,
+    #665544 0px,
+    #665544 3px,
+    transparent 8px,
+    transparent 20px
+  );
+  border-radius: 5px;
 }

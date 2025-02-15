@@ -1,70 +1,73 @@
 /* ✅ Conteneur global du composant Todo-Form */
 .todo-form-container {
     max-width: 600px;
-    background: #ffffff;
+    background: #fdf7e3; // 🎨 Arrière-plan couleur papier
     border-radius: 10px;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.05);
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15);
     padding: 20px;
     text-align: center;
-    border: 1px solid #ddd;
+    border: 2px solid #d4a373; // 🖋️ Bordure style carnet
     margin-bottom: 20px;
+    font-family: 'Caveat', cursive, 'Arial', sans-serif; // ✍️ Style manuscrit
 }
 
 /* ✅ Champ de saisie */
 .todo-input {
     width: 100%;
-    padding: 10px;
-    border: 1px solid #e0e0e0;
-    border-radius: 5px;
-    font-size: 16px;
+    padding: 12px;
+    border: 2px solid #e0c097;
+    border-radius: 8px;
+    font-size: 20px;
     outline: none;
     transition: border 0.3s;
-    flex: 1; // ✅ Prend tout l'espace restant
+    flex: 1;
+    background: #fffaf0; // 🎨 Couleur papier plus claire
+    font-family: 'Caveat', cursive, 'Arial', sans-serif;
 }
 
 .todo-input:focus {
-    border-color: #37393b;
+    border-color: #b08968;
 }
 
-/* ✅ Bouton Ajouter */
-.todo-button {
-    background-color: #232224;
+/* ✅ Boutons */
+.todo-button, .sync-button {
+    background-color: #d4a373;
     color: white;
-    border: none;
-    border-radius: 5px;
-    font-size: 16px;
+    border: 2px solid #b08968;
+    border-radius: 8px;
+    font-size: 20px;
     padding: 10px 15px;
     cursor: pointer;
-    transition: background 0.3s ease-in-out;
-    flex: 1; // ✅ Ajuste les boutons pour qu'ils prennent la même largeur
+    transition: all 0.3s ease-in-out;
+    flex: 1;
+    font-family: 'Caveat', cursive, 'Arial', sans-serif;
 }
 
-.todo-button:hover {
-    background-color: #6b6768;
+.todo-button:hover, .sync-button:hover {
+    background-color: #b08968;
     color: white;
 }
 
 /* ✅ Bouton Sync Calendar */
 .sync-button {
-    background-color: #007bff;
-    color: white;
+    background-color: #6d6875;
 }
 
 .sync-button:hover {
-    background-color: #0056b3;
+    background-color: #4a4e69;
 }
 
 /* ✅ Conteneur du champ de saisie */
 .input-group {
     display: flex;
     width: 100%;
-    gap: 8px; // ✅ Espacement entre les éléments
+    gap: 8px;
 }
 
 /* ✅ Conteneur des boutons (Ajouter & Sync Calendar) */
 .button-group {
     display: flex;
-    justify-content: space-between; // ✅ Aligner les boutons côte à côte
-    gap: 10px; // ✅ Espacement entre les boutons
-    margin-top: 10px; // ✅ Espacement entre le champ et les boutons
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 10px;
 }

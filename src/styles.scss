@@ -1,4 +1,12 @@
-/* You can add global styles to this file, and also import other style files */
+/* ✅ Appliquer un fond papier */
+body {
+    background: #f3f0e8; /* ✅ Couleur beige pour imiter le papier */
+    background-image: url('https://www.transparenttextures.com/patterns/white-paper.png'); /* ✅ Texture papier */
+    font-family: 'Caveat', cursive, 'Arial', sans-serif; /* ✅ Police manuscrite */
+}
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+/* ✅ Police manuscrite pour le titre et les tâches */
+h4, .task-title, .todo-input {
+    font-family: 'Caveat', cursive, 'Arial', sans-serif;
+    font-size: 22px;
+}
