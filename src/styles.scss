@@ -1,4 +1,4 @@
-/* ✅ Police manuscrite pour l'effet carnet */
+/* ✅ Import de la police manuscrite pour l'effet carnet */
 @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&display=swap');
 
 /* ✅ Style global carnet */
@@ -10,21 +10,25 @@ body {
   padding: 0;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
+  align-items: center; /* ✅ Centrage horizontal */
+  justify-content: flex-start; /* ✅ Fixe l'application en haut */
+  min-height: 100vh;
 }
 
 /* ✅ Conteneur principal style carnet */
 .app-container {
-  max-width: 800px;
+  max-width: 800px; /* ✅ Largeur fixe */
   width: 90%;
+  min-height: 300px; /* ✅ Évite un affichage trop petit */
+  height: auto; /* ✅ Ajustement dynamique de la hauteur */
   background: #fffaf0;
   border-radius: 12px;
   box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.1);
   padding: 20px;
   border: 2px solid #d6d1c4;
   position: relative;
+  overflow-y: auto; /* ✅ Permet le scroll si beaucoup de tâches */
+  margin-top: 20px; /* ✅ Décale légèrement du haut */
 }
 
 /* ✅ Effet de lignes pour le style carnet */
@@ -65,4 +69,35 @@ h1, .task-title, .todo-input {
     transparent 20px
   );
   border-radius: 5px;
+}
+
+/* ✅ Empêcher l'expansion en largeur avec des tâches longues */
+.todo-list {
+  width: 100%;
+  max-width: 100%;
+}
+
+.todo-list-item {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* ✅ Éviter que le texte prenne toute la largeur */
+.task-title {
+  flex-grow: 1;
+  max-width: 70%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ✅ Cache les boutons jusqu'au survol */
+.task-actions {
+  display: none;
+}
+
+.todo-list-item:hover .task-actions {
+  display: flex;
 }
