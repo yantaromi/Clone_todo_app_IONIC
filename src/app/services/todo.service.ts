@@ -89,4 +89,29 @@ export class TodoService {
     const savedTasks = localStorage.getItem('tasks');
     return savedTasks ? JSON.parse(savedTasks) : [];
   }
+
+  updateTask(updatedTask: Task): void {
+    const index = this.tasks.findIndex(task => task.id === updatedTask.id);
+    if (index !== -1) {
+      this.tasks[index] = updatedTask; // ✅ Met à jour la tâche dans le tableau
+      this.updateTasks(); // ✅ Met à jour l'observable
+    }
+  }
+  
+  addSubTask(taskId: number, subTaskTitle: string): void {
+    const task = this.tasks.find(t => t.id === taskId);
+    if (task) {
+      if (!task.subTasks) {
+        task.subTasks = []; // ✅ Initialisation si subTasks n'existe pas encore
+      }
+      const newSubTask = {
+        id: Date.now(), // ✅ Génération d'un ID unique
+        title: subTaskTitle.trim(),
+        completed: false
+      };
+      task.subTasks.push(newSubTask);
+      this.updateTasks(); // ✅ Notifie les abonnés des changements
+    }
+  }
+  
 }

@@ -4,11 +4,12 @@ import { TodoService } from '../../services/todo.service';
 import { CalendarService } from '../../services/calendar.service';
 import { Task } from '../../models/task.model';
 import { Subscription } from 'rxjs';
+import { TaskViewComponent } from '../task-view/task-view.component'; // ✅ Import du composant standalone
 
 @Component({
   selector: 'app-todo-list',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TaskViewComponent],
   templateUrl: './todo-list.component.html',
   styleUrls: ['./todo-list.component.scss']
 })
@@ -18,7 +19,8 @@ export class TodoListComponent implements OnInit, OnDestroy {
   motivationMessage: string = '';
   private tasksSubscription!: Subscription;
   private cleanupTimer: any;
-
+ 
+  selectedTask: Task | null = null;
   constructor(private todoService: TodoService, private calendarService: CalendarService) {}
 
   ngOnInit(): void {
@@ -66,7 +68,14 @@ export class TodoListComponent implements OnInit, OnDestroy {
     this.progress = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
     this.updateMotivationMessage();
   }
-
+  /** ✅ Ouvre la fenêtre modale avec les détails de la tâche */
+  openTaskView(task: Task): void {
+    this.selectedTask = task;
+  }
+  /** ✅ Ferme la fenêtre modale */
+  closeTaskView(): void {
+    this.selectedTask = null;
+  }
   updateMotivationMessage(): void {
     if (this.progress >= 75 && this.progress < 100) {
       this.motivationMessage = '🔥 Dernière ligne droite, on lâche pas !';

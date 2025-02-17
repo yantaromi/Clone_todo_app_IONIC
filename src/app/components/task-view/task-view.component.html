@@ -1,0 +1,29 @@
+<div class="task-modal-overlay" (click)="closeModal()">
+    <div class="task-modal-container" (click)="$event.stopPropagation()">
+      <div class="task-details-header">
+        <h3>Détails de la tâche</h3>
+        <button class="close-btn" (click)="closeModal()">✖</button>
+      </div>
+  
+      <!-- ✅ Modification du titre -->
+      <div *ngIf="isEditing" class="task-edit">
+        <input type="text" [(ngModel)]="editableTitle" placeholder="Modifier la tâche">
+        <button class="save-btn" (click)="updateTaskTitle()">💾 Enregistrer</button>
+        <button class="cancel-btn" (click)="toggleEditTitle()">❌ Annuler</button>
+      </div>
+      <h4>{{ task.title }}</h4>
+  
+      <!-- ✅ Actions -->
+      <div class="task-options">
+        <button class="menu-btn" (click)="toggleEditTitle()">✏ Modifier</button>
+        <button class="menu-btn" (click)="toggleSubTaskInput()">➕ Ajouter sous-tâche</button>
+      </div>
+  
+      <!-- ✅ Ajout de sous-tâches -->
+      <div *ngIf="showSubTaskInput" class="sub-task-input">
+        <input type="text" [(ngModel)]="newSubTaskTitle" placeholder="Nouvelle sous-tâche">
+        <button class="add-btn" (click)="addSubTask()">Ajouter</button>
+      </div>
+    </div>
+  </div>
+  
