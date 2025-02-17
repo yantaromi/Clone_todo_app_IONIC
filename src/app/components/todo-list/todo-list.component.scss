@@ -1,15 +1,18 @@
 .todo-list {
   list-style: none;
   padding: 0;
+  margin: 0;
 
   .todo-list-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px;
+    padding: 10px 0;
     border-bottom: 1px solid #ddd;
     min-height: 40px;
     position: relative;
+    flex-direction: column;
+    
 
     /* ✅ Masquer les boutons par défaut */
     .task-actions {
@@ -17,6 +20,7 @@
       align-items: center;
       flex-shrink: 0;
       gap: 8px;
+      right: 0; /* ✅ Actions toujours à gauche */
     }
 
     /* ✅ Afficher les boutons uniquement au survol */
@@ -45,9 +49,53 @@
     font-size: 1.2rem;
     cursor: pointer;
     transition: transform 0.2s ease-in-out;
+    background: none;
+    padding: 5px;
+    
 
     &:hover {
       transform: scale(1.1);
     }
   }
+      /* ✅ Style des sous-tâches */
+      .sub-task-list {
+        list-style: none;
+        padding: 0;
+        margin-top: 5px;
+        margin-left: 20px; /* ✅ Décalage pour afficher les sous-tâches en retrait */
+        border-left: 2px solid #ddd;
+        padding-left: 10px;
+        display: flex;
+        flex-direction: column; /* ✅ Affichage vertical */
+        margin-left: 40px; /* ✅ Deux niveaux de tabulation */
+        border-left: 2px solid #ddd; /* ✅ Ligne pour visualiser */
+      }
+      .sub-task-item span {
+        flex-grow: 1;
+        text-align: left;
+        padding-left: 20px; /* ✅ Alignement correct */
+      }
+
+    .sub-task-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 5px 10px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .sub-task-item span {
+      flex-grow: 1;
+      cursor: pointer;
+    }
+
+    .text-decoration-line-through {
+      text-decoration: line-through;
+      color: gray;
+    }
+        /* ✅ Masquer les boutons par défaut */
+    .sub-task-actions {
+      display: flex;
+      gap: 5px;
+    }
 }

@@ -69,7 +69,8 @@ export class TodoListComponent implements OnInit, OnDestroy {
     this.updateMotivationMessage();
   }
   /** ✅ Ouvre la fenêtre modale avec les détails de la tâche */
-  openTaskView(task: Task): void {
+  openTaskView(task: Task, event?: MouseEvent): void {
+    if (event) event.stopPropagation(); // ✅ Empêche la propagation si $event est passé
     this.selectedTask = task;
   }
   /** ✅ Ferme la fenêtre modale */
@@ -88,5 +89,17 @@ export class TodoListComponent implements OnInit, OnDestroy {
     } else {
       this.motivationMessage = '';
     }
+  }
+
+  /** ✅ Basculer l'état d'une sous-tâche */
+  toggleSubTaskCompletion(taskId: number, subTaskId: number, event: MouseEvent): void {
+  event.stopPropagation(); // ✅ Empêche le clic de se propager à la tâche principale
+  this.todoService.toggleSubTaskCompletion(taskId, subTaskId);
+  }
+
+  /** ✅ Supprimer une sous-tâche */
+  removeSubTask(taskId: number, subTaskId: number, event: MouseEvent): void {
+    event.stopPropagation();
+    this.todoService.deleteSubTask(taskId, subTaskId);
   }
 }

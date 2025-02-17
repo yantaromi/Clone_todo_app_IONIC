@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Task } from '../models/task.model';
+import { Task, SubTask } from '../models/task.model';
 import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
@@ -102,16 +102,36 @@ export class TodoService {
     const task = this.tasks.find(t => t.id === taskId);
     if (task) {
       if (!task.subTasks) {
-        task.subTasks = []; // ✅ Initialisation si subTasks n'existe pas encore
+        task.subTasks = []; // ✅ Initialise `subTasks` si elle est `undefined`
       }
-      const newSubTask = {
-        id: Date.now(), // ✅ Génération d'un ID unique
+      const newSubTask: SubTask = {
+        id: Date.now(),
         title: subTaskTitle.trim(),
-        completed: false
+        completed: false,
+        showActions: false // ✅ Ajout de showActions pour éviter undefined
       };
       task.subTasks.push(newSubTask);
-      this.updateTasks(); // ✅ Notifie les abonnés des changements
+      this.updateTasks();
     }
   }
+  toggleSubTaskCompletion(taskId: number, subTaskId: number): void {
+    const task = this.tasks.find(t => t.id === taskId);
+    if (task?.subTasks) { // ✅ Vérification pour éviter l'erreur
+      const subTask = task.subTasks.find(st => st.id === subTaskId);
+      if (subTask) {
+        subTask.completed = !subTask.completed;
+        this.updateTasks();
+      }
+    }
+  }
+  
+  deleteSubTask(taskId: number, subTaskId: number): void {
+    const task = this.tasks.find(t => t.id === taskId);
+    if (task && task.subTasks) {
+      task.subTasks = task.subTasks.filter(subTask => subTask.id !== subTaskId); // ✅ Supprime la sous-tâche
+      this.updateTasks(); // ✅ Met à jour les abonnés
+    }
+  }
+  
   
 }
