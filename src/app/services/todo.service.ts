@@ -114,16 +114,18 @@ export class TodoService {
       this.updateTasks();
     }
   }
-  toggleSubTaskCompletion(taskId: number, subTaskId: number): void {
-    const task = this.tasks.find(t => t.id === taskId);
-    if (task?.subTasks) { // ✅ Vérification pour éviter l'erreur
-      const subTask = task.subTasks.find(st => st.id === subTaskId);
-      if (subTask) {
-        subTask.completed = !subTask.completed;
-        this.updateTasks();
-      }
+  /** ✅ Bascule l'état de complétion d'une sous-tâche */
+toggleSubTaskCompletion(taskId: number, subTaskId: number): void {
+  const task = this.tasks.find(t => t.id === taskId);
+  if (task?.subTasks) {
+    const subTask = task.subTasks.find(st => st.id === subTaskId);
+    if (subTask) {
+      subTask.completed = !subTask.completed; // ✅ Inverse l’état de la sous-tâche
+      this.updateTaskCompletion(taskId); // ✅ Vérifie si la tâche principale doit être validée
     }
   }
+}
+
   
   deleteSubTask(taskId: number, subTaskId: number): void {
     const task = this.tasks.find(t => t.id === taskId);
@@ -132,6 +134,16 @@ export class TodoService {
       this.updateTasks(); // ✅ Met à jour les abonnés
     }
   }
-  
+  /** ✅ Vérifie si toutes les sous-tâches sont complètes et met à jour la tâche principale */
+private updateTaskCompletion(taskId: number): void {
+  const task = this.tasks.find(t => t.id === taskId);
+  if (task && task.subTasks) {
+    // Vérifie si toutes les sous-tâches sont complétées
+    const allCompleted = task.subTasks.every(subTask => subTask.completed);
+    task.completed = allCompleted; // ✅ Met à jour la tâche principale
+    this.updateTasks();
+  }
+}
+
   
 }

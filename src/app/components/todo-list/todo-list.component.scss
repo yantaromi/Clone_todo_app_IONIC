@@ -5,14 +5,25 @@
 
   .todo-list-item {
     display: flex;
-    justify-content: space-between;
+    flex-wrap: wrap; /* ✅ Permet d'afficher ligne + colonne */
     align-items: center;
     padding: 10px 0;
     border-bottom: 1px solid #ddd;
     min-height: 40px;
     position: relative;
-    flex-direction: column;
-    
+
+    /* ✅ Les 2 premiers éléments restent en ligne */
+    > *:nth-child(-n+2) {
+      flex: 0 1 auto; /* ✅ Empêche les 2 premiers éléments de passer en colonne */
+      margin-right: 10px;
+    }
+
+    /* ✅ Le reste passe en colonne */
+    > *:nth-child(n+3) {
+      flex-basis: 100%; /* ✅ Force la colonne après les 2 premiers */
+      display: flex;
+      flex-direction: column;
+    }
 
     /* ✅ Masquer les boutons par défaut */
     .task-actions {
@@ -20,7 +31,7 @@
       align-items: center;
       flex-shrink: 0;
       gap: 8px;
-      right: 0; /* ✅ Actions toujours à gauche */
+      right: 0; /* ✅ Actions toujours à droite */
     }
 
     /* ✅ Afficher les boutons uniquement au survol */
@@ -36,6 +47,13 @@
     overflow: hidden;
     text-overflow: ellipsis;
     cursor: pointer;
+
+    /* ✅ Appliquer l'animation uniquement à la première colonne */
+    &.text-decoration-line-through {
+      text-decoration: line-through;
+      color: gray;
+      transition: text-decoration 0.3s ease-in-out, color 0.3s ease-in-out;
+    }
   }
 
   .todo-btn {
@@ -51,51 +69,47 @@
     transition: transform 0.2s ease-in-out;
     background: none;
     padding: 5px;
-    
 
     &:hover {
       transform: scale(1.1);
     }
   }
-      /* ✅ Style des sous-tâches */
-      .sub-task-list {
-        list-style: none;
-        padding: 0;
-        margin-top: 5px;
-        margin-left: 20px; /* ✅ Décalage pour afficher les sous-tâches en retrait */
-        border-left: 2px solid #ddd;
-        padding-left: 10px;
-        display: flex;
-        flex-direction: column; /* ✅ Affichage vertical */
-        margin-left: 40px; /* ✅ Deux niveaux de tabulation */
-        border-left: 2px solid #ddd; /* ✅ Ligne pour visualiser */
-      }
-      .sub-task-item span {
-        flex-grow: 1;
-        text-align: left;
-        padding-left: 20px; /* ✅ Alignement correct */
-      }
 
-    .sub-task-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 5px 10px;
-      border-bottom: 1px solid #f0f0f0;
-    }
+  /* ✅ Style des sous-tâches */
+  .sub-task-list {
+    list-style: none;
+    padding: 0;
+    margin-top: 5px;
+    margin-left: 40px; /* ✅ Décalage pour afficher les sous-tâches en retrait */
+    border-left: 2px solid #ddd;
+    padding-left: 10px;
+    display: flex;
+    flex-direction: column; /* ✅ Affichage vertical */
+  }
 
-    .sub-task-item span {
-      flex-grow: 1;
-      cursor: pointer;
-    }
+  .sub-task-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 5px 10px;
+    border-bottom: 1px solid #f0f0f0;
 
-    .text-decoration-line-through {
-      text-decoration: line-through;
-      color: gray;
-    }
-        /* ✅ Masquer les boutons par défaut */
+    /* ✅ Empêcher les boutons d'hériter du texte barré */
     .sub-task-actions {
       display: flex;
       gap: 5px;
     }
+  }
+
+  /* ✅ Barrer uniquement le texte des sous-tâches, pas les boutons */
+  .sub-task-text {
+    flex-grow: 1;
+    cursor: pointer;
+    transition: text-decoration 0.3s ease-in-out, color 0.3s ease-in-out;
+  }
+
+  .text-decoration-line-through {
+    text-decoration: line-through;
+    color: gray;
+  }
 }
